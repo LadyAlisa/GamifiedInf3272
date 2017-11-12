@@ -1,0 +1,201 @@
+<?php
+
+
+
+function aoachievements_help($path, $arg){
+    switch($path) {
+        case "admin/help_aoachievements":
+        return t("Achievements from Quiz");
+        break;
+    }
+    
+}
+
+function aoachievements_block_info(){
+    $blocks['overview'] = array(
+        'info' => t('Achievements from Quiz'),
+        'cache' => DRUPAL_NO_CACHE
+    );
+
+    return $blocks;    
+}
+
+function getUserAchievements($userId){
+
+    // get ids from drupal node ids
+    $quiz_ids = Array(
+    'drupal7' => 100,
+    'types' => 26,
+    'content' => 9,
+    'legal' => 23,
+    'analysis' => 25,
+    'architecture' => 15);         
+
+    $quizResultsForUser = Array();
+
+    $achievementA = false;
+    $achievementC = false;
+    $achievementE = false;
+    $achievementG = false;
+    $achievementI = false;
+    $achievementK = false;
+    $achievementM = false;
+    $achievementN = false;
+    $achievementO = false;
+    $achievementP = false;
+    $achievementQ = false;
+
+    $quizCount = 0;
+    $allCorrect = 0;
+    $passCount = 0;
+    $supermanCount = 0;
+    foreach($quiz_ids as $key => $quiz_id)
+    {
+        // quiz has multiple attempts, take the attempt with highest score.
+        $query = db_query('SELECT * FROM {quiz_node_results} r WHERE r.uid = :uid AND r.nid = :nid ORDER BY r.score DESC', array(':uid' => $userId, ':nid' => $quiz_id));        
+        if($query->rowCount() == 0)
+        {
+            $quizResultsForUser[$key] = 0;
+        }
+        else
+        {
+            $row = $query->fetchAssoc();
+            $result = $row['score'];
+            if($result >= 100)
+            {
+                if($row['attempt'] == 1)
+                {
+                    $achievementG = true;   
+                    $supermanCount++;                 
+                }
+                $achievementC = true;
+                $allCorrect++;
+                $passCount++;
+            }
+            else if($result >= 75)
+            {
+                $passCount++;
+            }
+
+            $quizResultsForUser[$key] = $result;
+            $quizCount++;
+            $achievementM = true;
+
+            $countQuery = db_query('SELECT count(*) as count FROM {quiz_node_results} r WHERE r.uid = :uid AND r.nid = :nid', array(':uid' => $userId, ':nid' => $quiz_id));
+            $count = $countQuery->fetchAssoc()['count'];
+            if($count > 1)
+            {
+                $achievementO = true;
+            }
+
+            if($count > 4)
+            {
+                $achievementP = true;
+            }
+        }       
+    }    
+    
+    if($quizCount == count($quiz_ids))
+    {
+        $achievementA = true;
+    }
+    
+    if($allCorrect == count($quiz_ids))
+    {
+        $achievementK = true;
+    }
+
+    if($passCount == count($quiz_ids))
+    {
+        $achievementN = true;
+    }
+
+    if($supermanCount == count($quiz_ids))
+    {
+        $achievementQ = true;
+    }
+
+
+    $str = "<ul>";
+    if($achievementA)
+    {
+        $str .= "<li><b>Exploration, check!</b> Take a test in every single topic.";
+    }
+
+    if($achievementC)
+    {
+        $str .= "<li><b>Know Thy Topic!</b> Answer every single question correct in one test.";
+    }
+
+    // not used for now
+    if($achievementE)
+    {
+        $str .= "<li><b>Why? Because it\'s there!!</b> Follow a link for extra literature.";
+    }
+
+    if($achievementG)
+    {
+        $str .= "<li><b>Nailed it!</b> Answer every single question correct on the first try.";
+    }
+
+    // not used for now
+    if($achievementI)
+    {
+        $str .= "<li><b>What long trips it has been!</b> Explored all links and tests.";
+    }
+
+    if($achievementK)
+    {
+        $str .= "<li><b>Look at me, I\'m awesome</b> Student answered all questions correct in every test.";
+    }
+
+    if($achievementM)
+    {
+        $str .= "<li><b>You did it! Kind of...</b> Take a first test.";
+    }
+
+    if($achievementN)
+    {
+        $str .= "<li><b>Now that\'s an achievement!</b> Passed all tests once";
+    }
+    
+    if($achievementO)
+    {
+        $str .= "<li><b>Practise makes perfect!</b> Take a single test 2 times";
+    }
+
+    if($achievementP)
+    {
+        $str .= "<li><b>Brutally dedicated!</b> Take a single test 5 times";
+    }
+
+    if($achievementQ)
+    {
+        $str .= "<li><b>Gisle lvl100 !!!</b> Answer every single question correct on all tests on the first try";
+    }
+
+    $str .= "</ul>";
+
+    return $str;
+}
+
+function aoachievements_contents(){
+    return "test data contents";
+}
+
+function aoachievements_block_view($delta = ''){
+    switch($delta){
+        case 'overview':
+        $block['subject'] = t('Overview');
+        if(user_access('access content')){
+            global $user;
+            $userId = $user->uid;
+            $userResults = getUserAchievements($userId);
+            $block['content'] = array(
+                '#markup' => $userResults
+            );
+
+            return $block;
+        }
+    }
+}

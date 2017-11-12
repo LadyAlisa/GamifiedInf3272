@@ -1,0 +1,14 @@
+
+
+/* optional Container STYLES */
+.chart { height: 300px; width: 900px; margin: 5px; margin: 5px auto; border: 3px solid #DDD; border-radius: 3px; }
+.nodeRoot { color: #000; border: 2px solid #000; border-radius: 3px; padding: 3px }
+.nodeCompleted { color: #000; border: 2px solid green; border-radius: 3px; }
+.nodeNotCompleted { color: #000; border: 2px solid red; border-radius: 3px; }
+.nodePassed { color: #000; border: 2px solid orange; border-radius: 3px; }
+.nodex p { font-family: Arial, Helvetica, sans-serif;  font-size: 14px; line-height: 20px; height: 20px; font-weight: bold; padding: 3px; margin: 0; }
+
+.notCompleted { color: red}
+.completed { color: green}
+.passed { color: orange}
+

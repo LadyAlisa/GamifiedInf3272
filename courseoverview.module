@@ -1,0 +1,99 @@
+<?php
+
+
+
+function courseoverview_help($path, $arg){
+    switch($path) {
+        case "admin/help_courseoverview":
+        return t("Course overview module");
+        break;
+    }
+    
+}
+
+function courseoverview_block_info(){
+    $blocks['courseoverview'] = array(
+        'info' => t('Course overview'),
+        'cache' => DRUPAL_NO_CACHE
+    );
+
+    return $blocks;    
+}
+
+function getUserResults($userId){
+
+    // get ids from drupal node ids
+    $quiz_ids = Array('dev' => 22,
+    'drupal7' => 100,
+    'types' => 26,
+    'content' => 9,
+    'legal' => 23,
+    'analysis' => 25,
+    'architecture' => 15);         
+
+    $quizResultsForUser = Array();
+
+    foreach($quiz_ids as $key => $quiz_id)
+    {
+        // quiz has multiple attempts, take the attempt with highest score.
+        $query = db_query('SELECT * FROM {quiz_node_results} r WHERE r.uid = :uid AND r.nid = :nid ORDER BY r.score DESC', array(':uid' => $userId, ':nid' => $quiz_id));
+        $result = $query->fetchAssoc()['score'];
+        if($query->rowCount() == 0)
+        {
+            $quizResultsForUser[$key] = 0;
+        }
+        else
+        {
+            $quizResultsForUser[$key] = $result;
+        }
+    }
+
+    return $quizResultsForUser;
+}
+
+function courseoverview_contents(){
+    return "courseoverview contents";
+}
+
+function courseoverview_block_view($delta = ''){
+    switch($delta){
+        case 'courseoverview':
+        $block['subject'] = t('Course overview');
+        if(user_access('access content')){
+            global $user;
+            $userId = $user->uid;
+            $userResults = getUserResults($userId);
+            $result = courseoverview_contents();
+            $block['content'] = array(
+                '#markup' => '
+                <div class="chart" id="overview">
+	</div>
+	<script>
+        
+        var dev = '. $userResults['dev'] .';
+        var drupal7 = '. $userResults['drupal7'] .';
+        var types = '. $userResults['types'] .';
+        var content = '. $userResults['content'] .';
+        var legal = '. $userResults['legal'] .';
+        var analysis = '. $userResults['analysis'] .';
+        var architecture = '. $userResults['architecture'] .';
+        var overview_config = configureTree();
+		new Treant( overview_config);
+	</script>',
+                '#attached' => array(
+                    'css' => array(
+                        drupal_get_path('module', 'courseoverview') . '/css/treant.css',
+                        drupal_get_path('module', 'courseoverview') . '/css/overview.css'
+                        ),
+                    'js' => array(
+                        drupal_get_path('module', 'courseoverview') . '/js/raphael.js',
+                        drupal_get_path('module', 'courseoverview') . '/js/Treant.js',
+                        drupal_get_path('module', 'courseoverview') . '/js/overview.js'
+                    )
+                )
+            );
+
+            return $block;
+        }
+    }
+}
