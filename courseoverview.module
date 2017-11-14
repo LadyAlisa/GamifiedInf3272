@@ -1,14 +1,11 @@
 <?php
 
-
-
 function courseoverview_help($path, $arg){
     switch($path) {
         case "admin/help_courseoverview":
         return t("Course overview module");
         break;
-    }
-    
+    }    
 }
 
 function courseoverview_block_info(){
@@ -20,6 +17,7 @@ function courseoverview_block_info(){
     return $blocks;    
 }
 
+// return information of a users progress throughtout the course. This information is used to show the users status in course training.
 function getUserResults($userId){
 
     // get ids from drupal node ids
@@ -55,6 +53,11 @@ function courseoverview_contents(){
     return "courseoverview contents";
 }
 
+// Provides the view for this module
+// The view is composed of a html piece, a javascript piece and a css piece.
+// It also includes the javascript library dependencies.
+// First data is fetched from database, this data is then used to generate javascript code with values from database, this code is then used by the
+// attached javascripts to style elements and display course progress.
 function courseoverview_block_view($delta = ''){
     switch($delta){
         case 'courseoverview':

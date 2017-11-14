@@ -1,14 +1,11 @@
 <?php
 
-
-
 function aoachievements_help($path, $arg){
     switch($path) {
         case "admin/help_aoachievements":
         return t("Achievements from Quiz");
         break;
-    }
-    
+    }    
 }
 
 function aoachievements_block_info(){
@@ -20,11 +17,13 @@ function aoachievements_block_info(){
     return $blocks;    
 }
 
+// Queries the Quiz tables in the database and returns achievements as a HTML list string.
 function getUserAchievements($userId){
 
     // get ids from drupal node ids
     $quiz_ids = Array(
-    'drupal7' => 100,
+    'introduction' => 116,
+	'drupal7' => 100,
     'types' => 26,
     'content' => 9,
     'legal' => 23,
@@ -81,6 +80,7 @@ function getUserAchievements($userId){
             $quizCount++;
             $achievementM = true;
 
+			// fetch number of attempts for a single quiz
             $countQuery = db_query('SELECT count(*) as count FROM {quiz_node_results} r WHERE r.uid = :uid AND r.nid = :nid', array(':uid' => $userId, ':nid' => $quiz_id));
             $count = $countQuery->fetchAssoc()['count'];
             if($count > 1)
@@ -114,7 +114,6 @@ function getUserAchievements($userId){
     {
         $achievementQ = true;
     }
-
 
     $str = "<ul>";
     if($achievementA)
@@ -183,6 +182,7 @@ function aoachievements_contents(){
     return "test data contents";
 }
 
+// returns the achievements view
 function aoachievements_block_view($delta = ''){
     switch($delta){
         case 'overview':
