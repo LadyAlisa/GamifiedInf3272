@@ -34,7 +34,7 @@ function configureTree(){
 	var parent_node = {
 		text: { name: "INF3272" },
 		HTMLclass : "nodeRoot",
-		innerHTML : "INF3272""<br><p><a href=\"/node/117#overlay-context=node/11\" target=\"_self\"> Introduction </a></p>"
+		innerHTML : "INF3272<p><a href=\"/node/116#overlay-context=node/11\" target=\"_self\"> Introduction </a></p>"
 	};
 
 	var first_child = {
